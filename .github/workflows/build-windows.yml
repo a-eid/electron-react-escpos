@@ -18,14 +18,16 @@ jobs:
         with:
           node-version: '18'
           
-      - name: Install dependencies
-        run: npm install
-        
       - name: Install app dependencies
         run: |
           cd release/app
           npm install
-          cd ../..
+        
+      - name: Install root dependencies
+        run: npm install --ignore-scripts
+        
+      - name: Build DLL
+        run: npx cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.renderer.dev.dll.ts
         
       - name: Build application
         run: npm run build
