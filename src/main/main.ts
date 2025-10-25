@@ -30,17 +30,48 @@ let mainWindow: BrowserWindow | null = null;
 ipcMain.on('ipc-escpos-printer-80', async (event) => {
   console.log('IPC ESCPOS STARTING 80mm --------');
 
-  try {               
-    const escpos = require('escpos');   // import lib escpos            
-    escpos.USB = require('escpos-usb'); // create usb adapter          
+  try {
+    // Try to load the escpos module
+    let escpos;
+    try {
+      escpos = require('escpos');
+    } catch (escposError: any) {
+      event.reply('printer-response', {
+        success: false,
+        error: `Failed to load escpos module:\n${escposError.message}\n\nThis might mean the native modules weren't compiled correctly.`
+      });
+      return;
+    }
     
-    const printers = escpos.USB.findPrinter();
-    console.log('Available printers:', printers); // for see printer spesification (idVendor & idProduct)
+    // Try to load the USB adapter
+    try {
+      escpos.USB = require('escpos-usb');
+    } catch (usbError: any) {
+      event.reply('printer-response', {
+        success: false,
+        error: `Failed to load escpos-usb module:\n${usbError.message}\n\nThe USB module needs to be compiled for Windows. This build may not have native USB support.`
+      });
+      return;
+    }
+    
+    // Try to access the USB system
+    let printers;
+    try {
+      printers = escpos.USB.findPrinter();
+    } catch (findError: any) {
+      event.reply('printer-response', {
+        success: false,
+        error: `USB system error:\n${findError.message}\n\nThis usually means:\n1. USB module wasn't compiled for Windows\n2. Missing Windows USB drivers\n3. Application needs admin permissions\n\nFull error: ${findError.stack || findError}`
+      });
+      return;
+    }
+    
+    console.log('Available printers:', printers);
     
     if (!printers || printers.length === 0) {
       event.reply('printer-response', {
         success: false,
-        error: 'No USB printers found. Please check:\n1. Printer is connected via USB\n2. Printer is powered on\n3. USB drivers are installed'
+        error: `No USB printers detected by the system.\n\nUSB module loaded successfully, but no printers found.\n\nTroubleshooting:\n1. Check Windows Device Manager for printer\n2. Try different USB port\n3. Reinstall printer drivers\n4. Run app as Administrator\n5. Check if printer works with other software\n\nNote: The app detected ${printers ? printers.length : 0} USB devices.`
       });
       return;
     }
@@ -114,17 +145,48 @@ ipcMain.on('ipc-escpos-printer-80', async (event) => {
 ipcMain.on('ipc-escpos-printer-58', async (event) => {
   console.log('IPC ESCPOS STARTING 58mm --------');
 
-  try {               
-    const escpos = require('escpos');   // import lib escpos            
-    escpos.USB = require('escpos-usb'); // create usb adapter          
+  try {
+    // Try to load the escpos module
+    let escpos;
+    try {
+      escpos = require('escpos');
+    } catch (escposError: any) {
+      event.reply('printer-response', {
+        success: false,
+        error: `Failed to load escpos module:\n${escposError.message}\n\nThis might mean the native modules weren't compiled correctly.`
+      });
+      return;
+    }
     
-    const printers = escpos.USB.findPrinter();
-    console.log('Available printers:', printers); // for see printer spesification (idVendor & idProduct)
+    // Try to load the USB adapter
+    try {
+      escpos.USB = require('escpos-usb');
+    } catch (usbError: any) {
+      event.reply('printer-response', {
+        success: false,
+        error: `Failed to load escpos-usb module:\n${usbError.message}\n\nThe USB module needs to be compiled for Windows. This build may not have native USB support.`
+      });
+      return;
+    }
+    
+    // Try to access the USB system
+    let printers;
+    try {
+      printers = escpos.USB.findPrinter();
+    } catch (findError: any) {
+      event.reply('printer-response', {
+        success: false,
+        error: `USB system error:\n${findError.message}\n\nThis usually means:\n1. USB module wasn't compiled for Windows\n2. Missing Windows USB drivers\n3. Application needs admin permissions\n\nFull error: ${findError.stack || findError}`
+      });
+      return;
+    }
+    
+    console.log('Available printers:', printers);
     
     if (!printers || printers.length === 0) {
       event.reply('printer-response', {
         success: false,
-        error: 'No USB printers found. Please check:\n1. Printer is connected via USB\n2. Printer is powered on\n3. USB drivers are installed'
+        error: `No USB printers detected by the system.\n\nUSB module loaded successfully, but no printers found.\n\nTroubleshooting:\n1. Check Windows Device Manager for printer\n2. Try different USB port\n3. Reinstall printer drivers\n4. Run app as Administrator\n5. Check if printer works with other software\n\nNote: The app detected ${printers ? printers.length : 0} USB devices.`
       });
       return;
     }
