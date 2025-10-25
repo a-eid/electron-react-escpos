@@ -71,7 +71,7 @@ ipcMain.on('ipc-escpos-printer-80', async (event) => {
     if (!printers || printers.length === 0) {
       event.reply('printer-response', {
         success: false,
-        error: `No USB printers detected by the system.\n\nUSB module loaded successfully, but no printers found.\n\nTroubleshooting:\n1. Check Windows Device Manager for printer\n2. Try different USB port\n3. Reinstall printer drivers\n4. Run app as Administrator\n5. Check if printer works with other software\n\nNote: The app detected ${printers ? printers.length : 0} USB devices.`
+        error: `⚠️ No USB printers detected by the system.\n\n✅ USB module loaded successfully!\n❌ But no printers found.\n\n🔧 SOLUTION REQUIRED:\nYou need to install WinUSB drivers using Zadig!\n\nQuick Steps:\n1. Run "3rdparty/zadig.exe" as Administrator\n2. Options → List All Devices\n3. Select your printer from dropdown\n4. Install WinUSB or libusb-win32 driver\n5. Restart this app\n\n📖 See PRINTER_SETUP_WINDOWS.md for detailed instructions.\n\nWhy? Windows treats your printer as a "Printer Device".\nThis app needs direct USB access (faster printing).\nZadig converts it to a USB device.\n\nDevices detected: ${printers ? printers.length : 0}`
       });
       return;
     }
@@ -186,7 +186,7 @@ ipcMain.on('ipc-escpos-printer-58', async (event) => {
     if (!printers || printers.length === 0) {
       event.reply('printer-response', {
         success: false,
-        error: `No USB printers detected by the system.\n\nUSB module loaded successfully, but no printers found.\n\nTroubleshooting:\n1. Check Windows Device Manager for printer\n2. Try different USB port\n3. Reinstall printer drivers\n4. Run app as Administrator\n5. Check if printer works with other software\n\nNote: The app detected ${printers ? printers.length : 0} USB devices.`
+        error: `⚠️ No USB printers detected by the system.\n\n✅ USB module loaded successfully!\n❌ But no printers found.\n\n🔧 SOLUTION REQUIRED:\nYou need to install WinUSB drivers using Zadig!\n\nQuick Steps:\n1. Run "3rdparty/zadig.exe" as Administrator\n2. Options → List All Devices\n3. Select your printer from dropdown\n4. Install WinUSB or libusb-win32 driver\n5. Restart this app\n\n📖 See PRINTER_SETUP_WINDOWS.md for detailed instructions.\n\nWhy? Windows treats your printer as a "Printer Device".\nThis app needs direct USB access (faster printing).\nZadig converts it to a USB device.\n\nDevices detected: ${printers ? printers.length : 0}`
       });
       return;
     }
