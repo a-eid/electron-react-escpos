@@ -27,145 +27,172 @@ class AppUpdater {
 let mainWindow: BrowserWindow | null = null;
 
 
-ipcMain.on('ipc-escpos-printer-80', async () => {
-  console.log('IPC ESCPOS STARTING --------');
+ipcMain.on('ipc-escpos-printer-80', async (event) => {
+  console.log('IPC ESCPOS STARTING 80mm --------');
 
   try {               
-        
-    
     const escpos = require('escpos');   // import lib escpos            
     escpos.USB = require('escpos-usb'); // create usb adapter          
-    console.log(escpos.USB.findPrinter()); // for see printer spesification (idVendor & idProduct)
+    
+    const printers = escpos.USB.findPrinter();
+    console.log('Available printers:', printers); // for see printer spesification (idVendor & idProduct)
+    
+    if (!printers || printers.length === 0) {
+      event.reply('printer-response', {
+        success: false,
+        error: 'No USB printers found. Please check:\n1. Printer is connected via USB\n2. Printer is powered on\n3. USB drivers are installed'
+      });
+      return;
+    }
                   
     // register idVendor & idProduct Printer    
     const device = new escpos.USB(4070, 33054); // Printer VSC TM 801    
     const printer = new escpos.Printer(device); // initialize printer       
     
-      
     let qrUrl = 'https://github.com/denitiawan';
   
-        
     // templating
-    device.open(() => {      
-        
-        // print text
-        printer.align('lt').text('');
-        printer.align('ct').text('Test Printing');
-        printer.align('ct').text('Electron React Boilerplate');
-        printer.align('lt').text('');
-
-        printer.align('ct').text('By Deni Setiawan');
-        printer.align('ct').text('NexSOFT');                
-        printer.align('lt').text('');
-
-        printer.align('ct').text('Feature Support : ');
-        printer.align('ct').text('Printout Text');
-        printer.align('ct').text('Printout Barcode (CODE39)');
-        printer.align('ct').text('Printout QR Code');
-        printer.align('ct').text('Cut Papper');
-        printer.align('ct').text('Open Cash Drawer');                
-        printer.align('lt').text('');        
-        
-        
-        // Print Barcode  
-        printer.align('ct').barcode('CODE39', 'CODE39'); 
-        printer.align('ct').text('');
-
-               
-        // Print QR Code
-        printer.align('ct').text('Scan Me').style('B');
-        printer.align("ct").qrimage(qrUrl, function (err) { 
-          printer.align('ct').text(qrUrl);  
-          printer.align('ct').text('17-mei-2023 13:12');
-          printer.align('ct').text('');
-          printer.align('ct').text('');
-        
-          // print action
-          printer.cut(); 
-          printer.cashdraw(2); 
-          printer.close(); 
+    device.open((openError: any) => {
+      if (openError) {
+        event.reply('printer-response', {
+          success: false,
+          error: `Failed to open printer connection:\n${openError.message || openError}\n\nPlease check:\n1. Printer vendor ID: 4070, product ID: 33054\n2. Printer drivers are installed\n3. Printer is not in use by another application`
         });
-          
+        return;
+      }
         
-                
-  
-      });   
+      // print text
+      printer.align('lt').text('');
+      printer.align('ct').text('Test Printing');
+      printer.align('ct').text('Thermal Printer App');
+      printer.align('lt').text('');
 
-     }
-     catch (error) {    
-      console.log(error);
-    }    
+      printer.align('ct').text('Feature Support : ');
+      printer.align('ct').text('Printout Text');
+      printer.align('ct').text('Printout Barcode (CODE39)');
+      printer.align('ct').text('Printout QR Code');
+      printer.align('ct').text('Cut Paper');
+      printer.align('ct').text('Open Cash Drawer');                
+      printer.align('lt').text('');        
+      
+      // Print Barcode  
+      printer.align('ct').barcode('CODE39', 'CODE39'); 
+      printer.align('ct').text('');
+             
+      // Print QR Code
+      printer.align('ct').text('Scan Me').style('B');
+      printer.align("ct").qrimage(qrUrl, function (qrError: any) {
+        if (qrError) {
+          console.error('QR Code error:', qrError);
+        }
+        printer.align('ct').text(qrUrl);  
+        printer.align('ct').text(new Date().toLocaleString());
+        printer.align('ct').text('');
+        printer.align('ct').text('');
+      
+        // print action
+        printer.cut(); 
+        printer.cashdraw(2); 
+        printer.close(() => {
+          event.reply('printer-response', {
+            success: true,
+            message: 'Print job completed successfully for 80mm printer!'
+          });
+        });
+      });
+    });   
+
+  } catch (error: any) {    
+    console.error('Printer error:', error);
+    event.reply('printer-response', {
+      success: false,
+      error: `Unexpected error:\n${error.message || error}\n\nStack trace:\n${error.stack || 'No stack trace available'}`
+    });
+  }    
 });
 
-ipcMain.on('ipc-escpos-printer-58', async () => {
-  console.log('IPC ESCPOS STARTING --------');
+ipcMain.on('ipc-escpos-printer-58', async (event) => {
+  console.log('IPC ESCPOS STARTING 58mm --------');
 
   try {               
-        
-    
     const escpos = require('escpos');   // import lib escpos            
     escpos.USB = require('escpos-usb'); // create usb adapter          
-    console.log(escpos.USB.findPrinter()); // for see printer spesification (idVendor & idProduct)
+    
+    const printers = escpos.USB.findPrinter();
+    console.log('Available printers:', printers); // for see printer spesification (idVendor & idProduct)
+    
+    if (!printers || printers.length === 0) {
+      event.reply('printer-response', {
+        success: false,
+        error: 'No USB printers found. Please check:\n1. Printer is connected via USB\n2. Printer is powered on\n3. USB drivers are installed'
+      });
+      return;
+    }
                   
     // register idVendor & idProduct Printer    
     const device = new escpos.USB(2501,22750); // Printer C58BT
     const printer = new escpos.Printer(device); // initialize printer       
     
-      
     let qrUrl = 'https://github.com/denitiawan';
   
-        
     // templating
-    device.open(() => {      
-        
-        // print text
-        printer.align('lt').text('');
-        printer.align('ct').text('Test Printing');
-        printer.align('ct').text('Electron React Boilerplate');
-        printer.align('lt').text('');
-
-        printer.align('ct').text('By Deni Setiawan');
-        printer.align('ct').text('NexSOFT');                
-        printer.align('lt').text('');
-
-        printer.align('ct').text('Feature Support : ');
-        printer.align('ct').text('Printout Text');
-        printer.align('ct').text('Printout Barcode (CODE39)');
-        printer.align('ct').text('Printout QR Code');
-        printer.align('ct').text('Cut Papper');
-        printer.align('ct').text('Open Cash Drawer');                
-        printer.align('lt').text('');        
-        
-        
-        // Print Barcode  
-        printer.align('ct').barcode('CODE39', 'CODE39'); 
-        printer.align('ct').text('');
-
-               
-        // Print QR Code
-        printer.align('ct').text('Scan Me').style('B');
-        printer.align("ct").qrimage(qrUrl, function (err) { 
-          printer.align('ct').text(qrUrl);  
-          printer.align('ct').text('17-mei-2023 13:12');
-          printer.align('ct').text('');
-          printer.align('ct').text('');
-        
-          // print action
-          printer.cut(); 
-          printer.cashdraw(2); 
-          printer.close(); 
+    device.open((openError: any) => {
+      if (openError) {
+        event.reply('printer-response', {
+          success: false,
+          error: `Failed to open printer connection:\n${openError.message || openError}\n\nPlease check:\n1. Printer vendor ID: 2501, product ID: 22750\n2. Printer drivers are installed\n3. Printer is not in use by another application`
         });
-          
+        return;
+      }
         
-                
-  
-      });   
+      // print text
+      printer.align('lt').text('');
+      printer.align('ct').text('Test Printing');
+      printer.align('ct').text('Thermal Printer App');
+      printer.align('lt').text('');
 
-     }
-     catch (error) {    
-      console.log(error);
-      alert(error)
-    }    
+      printer.align('ct').text('Feature Support : ');
+      printer.align('ct').text('Printout Text');
+      printer.align('ct').text('Printout Barcode (CODE39)');
+      printer.align('ct').text('Printout QR Code');
+      printer.align('ct').text('Cut Paper');
+      printer.align('ct').text('Open Cash Drawer');                
+      printer.align('lt').text('');        
+      
+      // Print Barcode  
+      printer.align('ct').barcode('CODE39', 'CODE39'); 
+      printer.align('ct').text('');
+             
+      // Print QR Code
+      printer.align('ct').text('Scan Me').style('B');
+      printer.align("ct").qrimage(qrUrl, function (qrError: any) {
+        if (qrError) {
+          console.error('QR Code error:', qrError);
+        }
+        printer.align('ct').text(qrUrl);  
+        printer.align('ct').text(new Date().toLocaleString());
+        printer.align('ct').text('');
+        printer.align('ct').text('');
+      
+        // print action
+        printer.cut(); 
+        printer.cashdraw(2); 
+        printer.close(() => {
+          event.reply('printer-response', {
+            success: true,
+            message: 'Print job completed successfully for 58mm printer!'
+          });
+        });
+      });
+    });   
+
+  } catch (error: any) {    
+    console.error('Printer error:', error);
+    event.reply('printer-response', {
+      success: false,
+      error: `Unexpected error:\n${error.message || error}\n\nStack trace:\n${error.stack || 'No stack trace available'}`
+    });
+  }    
 });
 
 ipcMain.on('ipc-example', async (event, arg) => {

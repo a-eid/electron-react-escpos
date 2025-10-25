@@ -17,6 +17,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
           
       - name: Install app dependencies
         run: |
@@ -31,6 +36,11 @@ jobs:
         
       - name: Build application
         run: npm run build
+        
+      - name: Rebuild native modules for Windows
+        run: |
+          cd release/app
+          npm rebuild --runtime=electron --target=23.0.0 --disturl=https://electronjs.org/headers --build-from-source
         
       - name: Package for Windows
         run: npx electron-builder build --win --x64 --publish never
